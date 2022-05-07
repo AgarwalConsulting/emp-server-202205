@@ -6,6 +6,7 @@ HTTP Methods => {POST, GET, DELETE, PUT, OPTIONS, ...}
 
 ## Employee management system (JSON API)
 
+```
 CRUD        |     Action        |     HTTP Method     |           URL            |  request body       | response body
 ---------------------------------------------------------------------------------------------------------------------
 Read        |     Index         |    GET              |     /employees           |         -           | [{...}, ...]
@@ -14,3 +15,4 @@ Create      |     Create        |    POST             |     /employees          
 Update      |     Update        |    PUT              |     /employees/{id}      |        {...}        |  {...}
 Update      |     Update        |    PATCH            |     /employees/{id}      |      {some attrs}   |  {...}
 Destroy     |     Destroy       |    DELETE           |     /employees/{id}      |         -           |  - / {...}
+```
