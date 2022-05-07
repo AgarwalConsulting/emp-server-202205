@@ -3,7 +3,9 @@ package main
 import (
 	"encoding/json"
 	"fmt"
+	"log"
 	"net/http"
+	"time"
 
 	"github.com/gorilla/mux"
 )
@@ -14,8 +16,6 @@ type Employee struct {
 	Department string `json:"speciality"`
 	ProjectID  int    `json:"project"`
 }
-
-// func (Employee) MarshalJSON() ([]byte, error)
 
 var employees = []Employee{
 	{1, "Gaurav", "LnD", 1001},
@@ -46,30 +46,30 @@ func EmployeeCreateHandler(w http.ResponseWriter, req *http.Request) {
 	json.NewEncoder(w).Encode(newEmployee)
 }
 
-// func EmployeesHandler(w http.ResponseWriter, req *http.Request) {
-// 	if req.Method == "POST" {
-// 		EmployeeCreateHandler(w, req)
-// 	} else if req.Method == "GET" {
-// 		EmployeesIndexHandler(w, req)
-// 	} else {
-// 		w.WriteHeader(http.StatusMethodNotAllowed)
-// 	}
-// }
+func LoggingMiddleware(h http.Handler) http.Handler {
+	middleware := func(w http.ResponseWriter, req *http.Request) {
+		begin := time.Now()
+
+		h.ServeHTTP(w, req)
+
+		log.Printf("%s %s | duration: %s\n", req.Method, req.URL, time.Since(begin))
+	}
+
+	return http.HandlerFunc(middleware)
+}
 
 func main() {
-	// r := http.NewServeMux()
 	r := mux.NewRouter()
 
 	r.HandleFunc("/hello", func(w http.ResponseWriter, req *http.Request) {
 		msg := "Hello, World!"
 
-		// w.Write([]byte(msg))
 		fmt.Fprintln(w, msg)
 	})
 
-	// r.HandleFunc("/employees", EmployeesHandler)
 	r.HandleFunc("/employees", EmployeesIndexHandler).Methods("GET")
 	r.HandleFunc("/employees", EmployeeCreateHandler).Methods("POST")
 
-	http.ListenAndServe(":8000", r)
+	// http.ListenAndServe(":8000", handlers.LoggingHandler(os.Stdout, r))
+	http.ListenAndServe(":8000", LoggingMiddleware(r))
 }
