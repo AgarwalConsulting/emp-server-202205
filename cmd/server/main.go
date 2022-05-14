@@ -15,7 +15,8 @@ import (
 )
 
 var (
-	port = envOrDefault("PORT", "8000")
+	port  = envOrDefault("PORT", "8000")
+	dbURL = envOrDefault("DB_URL", "postgres://localhost:5432/emp-demo?sslmode=disable")
 )
 
 func envOrDefault(key string, dflt string) string {
@@ -41,7 +42,8 @@ func LoggingMiddleware(h http.Handler) http.Handler {
 }
 
 func main() {
-	var empRepo = repository.NewInMem()
+	// var empRepo = repository.NewInMem()
+	var empRepo = repository.NewSQL(dbURL)
 	var empSvc = service.NewV1(empRepo)
 	var empHandler = empHTTP.New(empSvc)
 
