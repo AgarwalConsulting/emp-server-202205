@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"log"
 	"net/http"
+	"os"
 	"time"
 
 	"github.com/gorilla/mux"
@@ -12,6 +13,20 @@ import (
 	"algogrit.com/emp-server/employees/repository"
 	"algogrit.com/emp-server/employees/service"
 )
+
+var (
+	port = envOrDefault("PORT", "8000")
+)
+
+func envOrDefault(key string, dflt string) string {
+	val, ok := os.LookupEnv(key)
+
+	if !ok {
+		return dflt
+	}
+
+	return val
+}
 
 func LoggingMiddleware(h http.Handler) http.Handler {
 	middleware := func(w http.ResponseWriter, req *http.Request) {
@@ -40,7 +55,7 @@ func main() {
 
 	empHandler.SetupRoutes(r)
 
-	log.Println("Starting server on port: 8000...")
+	log.Println("Starting server on port: " + port + "...")
 	// http.ListenAndServe(":8000", handlers.LoggingHandler(os.Stdout, r))
-	http.ListenAndServe(":8000", LoggingMiddleware(r))
+	http.ListenAndServe(":"+port, LoggingMiddleware(r))
 }
