@@ -49,3 +49,27 @@ func TestCreateV1(t *testing.T) {
 
 	assert.Equal(t, empInfo, createdEmp)
 }
+
+func FuzzCreateV1(f *testing.F) {
+	reqBody := `{"name": "Gaurav", "depar"}`
+	f.Add(reqBody)
+
+	f.Fuzz(func(t *testing.T, reqBody string) {
+		ctrl := gomock.NewController(t)
+		defer ctrl.Finish()
+
+		mockSvc := service.NewMockEmployeeService(ctrl)
+
+		sut := empHTTP.New(mockSvc)
+
+		req := httptest.NewRequest("POST", "/v1/employees", strings.NewReader(reqBody))
+
+		resRec := httptest.NewRecorder()
+
+		sut.ServeHTTP(resRec, req)
+
+		resp := resRec.Result()
+
+		assert.Equal(t, http.StatusBadRequest, resp.StatusCode)
+	})
+}

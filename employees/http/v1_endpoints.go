@@ -26,7 +26,7 @@ func (h *EmployeeHandler) CreateV1(w http.ResponseWriter, req *http.Request) {
 	var newEmployee entities.Employee
 	err := json.NewDecoder(req.Body).Decode(&newEmployee)
 
-	if err != nil {
+	if err != nil || (newEmployee == entities.Employee{}) {
 		w.WriteHeader(http.StatusBadRequest)
 		fmt.Fprintln(w, err)
 		return
