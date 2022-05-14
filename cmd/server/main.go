@@ -42,8 +42,8 @@ func LoggingMiddleware(h http.Handler) http.Handler {
 }
 
 func main() {
-	// var empRepo = repository.NewInMem()
-	var empRepo = repository.NewSQL(dbURL)
+	var empRepo = repository.NewInMem()
+	// var empRepo = repository.NewSQL(dbURL)
 	var empSvc = service.NewV1(empRepo)
 	var empHandler = empHTTP.New(empSvc)
 
